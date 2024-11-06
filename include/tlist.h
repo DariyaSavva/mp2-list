@@ -7,6 +7,8 @@
 
 using namespace std;
 
+// задача на список номер 9 : инвертаци€ списка за один проход, ќ(n)
+// реализована в методе invertation()
 
 template<typename T>
 class List {
@@ -16,8 +18,43 @@ class List {
 		Node(T _data, Node* _next) :data(_data), next(_next){};
 	};
 	Node* first;
-	
 public:
+	class iterator {
+		Node* curr;
+	public:
+		explicit iterator(Node* node) : curr(node) {}
+		iterator& operator++() {
+			if (!curr) throw 1; // если указатель итак находитс€ на последнем элементе
+			curr = curr->next;
+			return *this;
+		}
+		iterator operator++(int) {
+			iterator copy = *this;
+			curr = curr->next;
+			return copy;
+		}
+		iterator& operator+(int n) {
+			while (n--) {
+				(*this)++;
+			}
+			return *this;
+		}
+		T& operator*() { return curr->data; }
+		T* operator->() { return &(curr->data); }
+		friend bool operator!=(const iterator& it1, const iterator& it2) {
+			return (it1.curr != it2.curr);
+		}
+		friend bool operator==(const iterator& it1, const iterator& it2) {
+			return (it1.curr == it2.curr);
+		}
+	};
+	iterator& begin() const {
+		return iterator(first);
+	}
+
+	iterator& end() const {
+		return iterator(nullptr);
+	}
 	List() {
 		first = nullptr;
 	}
@@ -86,6 +123,19 @@ public:
 		}
 	bool operator==(const List&);
 	bool operator!=(const List&);
+	Node* invertation() {
+		if (!first) { return nullptr; }
+		Node* current = first;
+		Node* cnext = current->next;
+		current->next = nullptr;
+		while (cnext) {
+			Node* tmp = cnext->next;
+			cnext->next = current;
+			current = cnext;
+			cnext = tmp;
+		}
+		return (first = current); //ссылка на новый first
+	}
 };
 
 

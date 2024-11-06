@@ -177,3 +177,91 @@ TEST(List, lists_with_different_size_are_not_equal)
     }
     EXPECT_NE(true,l1==l2);
 }
+
+TEST(invertation, can_invertation_list) {
+    List<int> l1(0);
+    for (int i = 0; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    // l1 = {4 3 2 1 0}
+    l1.invertation();
+    EXPECT_EQ(l1[0], 0);
+    EXPECT_EQ(l1[4], 4);
+}
+
+
+TEST(iterator, can_create_iterator_point_to_first) {
+    List<int> l1(0);
+    for (int i = 0; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    List<int>::iterator it1(l1.insert_front(5));
+    EXPECT_EQ(*it1, 5);
+}
+
+
+TEST(iterator, can_create_iterator_not_point_to_first) {
+    List<int> l1(0);
+    List<int>::iterator it1(l1.insert_front(5));
+    for (int i = 0; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    EXPECT_EQ(*it1, 5);
+}
+
+
+TEST(iterator, can_increment_the_iterator_by_a_number) {
+    List<int> l1(0);
+    for (int i = 0; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    List<int>::iterator it1(l1.insert_front(5));
+    it1 + 5;
+    EXPECT_EQ(*it1, 0);
+}
+
+
+TEST(iterator, correct_prefix_increment) {
+    List<int> l1(0);
+    for (int i = 0; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    List<int>::iterator it1(l1.insert_front(5));
+    EXPECT_EQ(*(it1++), 5);
+    EXPECT_EQ(*it1, 4);
+}
+
+
+TEST(iterator, correct_postfix_increment) {
+    List<int> l1(0);
+    for (int i = 0; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    List<int>::iterator it1(l1.insert_front(5));
+    EXPECT_EQ(*(++it1), 4);
+    EXPECT_EQ(*it1, 4);
+}
+
+
+TEST(iterator, compare_equal_lists_return_true) {
+    List<int> l1(0);
+    List<int>::iterator it1(l1.insert_front(0));
+    for (int i = 1; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    List<int>::iterator it2 = l1.begin();
+    it2+4;
+    EXPECT_EQ(it1, it2);
+}
+
+
+TEST(iterator, different_iterators_are_not_equal) {
+    List<int> l1(0);
+    List<int>::iterator it1(l1.insert_front(0));
+    for (int i = 1; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    List<int>::iterator it2 = l1.begin();
+    it2 + 3;
+    EXPECT_NE(it1, it2);
+}
