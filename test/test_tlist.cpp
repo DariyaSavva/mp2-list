@@ -26,7 +26,7 @@ TEST(List, can_create_copied_list)
 
 TEST(List, can_create_copied_empty_list)
 {
-    List<int> list1(0);
+    List<int> list1;
     ASSERT_NO_THROW(List<int> list2(list1));
 }
 
@@ -42,14 +42,14 @@ TEST(List, copied_list_is_equal_to_source_one)
         list1.insert_front(i);
     }
     List<int> list2(list1);
-    EXPECT_EQ(true,list1==list2);
+    EXPECT_EQ(list1, list2);
 }
 
 TEST(List, copied_empty_list_is_equal_to_source_one)
 {
     List<int>  list1(0);
     List<int> list2(list1);
-    EXPECT_EQ(true,list1==list2);
+    EXPECT_EQ(list1, list2);
 }
 
 TEST(List, copied_list_has_its_own_memory)
@@ -98,7 +98,7 @@ TEST(List, can_assign_lists_of_equal_size)
 {
     List<int> list1(5, 0), list2(5, -1);
     list1 = list2;
-    EXPECT_EQ(true,list1==list2);
+    EXPECT_EQ(list1, list2);
 }
 
 TEST(List, assign_operator_change_list_size)
@@ -110,7 +110,7 @@ TEST(List, assign_operator_change_list_size)
     }
     // l1 содержит 4 элемента
     l2 = l1;
-    EXPECT_EQ(true,l1==l2);
+    EXPECT_EQ(l1, l2);
 }
 
 TEST(List, can_insert_front_element)
@@ -148,7 +148,7 @@ TEST(List, can_erase_element)
         list.insert_front(i);
     }
     // list = {3, 2, 1, 0, 0, 0}
-    list.erase(2);
+    list.erase(list.find(2));
     EXPECT_EQ(list[2], 0);
 }
 
@@ -158,14 +158,14 @@ TEST(List, compare_equal_lists_return_true)
     List<int> l1(3);
     l1.insert_front(1);
     List<int> l2(l1);
-    EXPECT_EQ(true,l1==l2);
+    EXPECT_EQ(l1, l2);
 }
 
 TEST(List, compare_list_with_itself_return_true)
 {
     List<int> l1(3);
     l1.insert_front(1);
-    EXPECT_EQ(true,l1==l1);
+    EXPECT_EQ(l1, l1);
 }
 
 TEST(List, lists_with_different_size_are_not_equal)
@@ -175,20 +175,33 @@ TEST(List, lists_with_different_size_are_not_equal)
         l1.insert_front(i);
         l2.insert_front(i);
     }
-    EXPECT_NE(true,l1==l2);
+    EXPECT_NE(l1, l2);
 }
 
-TEST(invertation, can_invertation_list) {
-    List<int> l1(0);
+TEST(invertation, can_invertation_the_completed_list) {
+    List<int> l1;
     for (int i = 0; i < 5; i++) {
         l1.insert_front(i);
     }
     // l1 = {4 3 2 1 0}
+    List<int> l2(l1);
     l1.invertation();
-    EXPECT_EQ(l1[0], 0);
-    EXPECT_EQ(l1[4], 4);
+    EXPECT_EQ(l1[0], l2[4]);
 }
 
+
+TEST(invertation, can_invertation_an_empty_list) {
+    List<int> l1;
+    l1.invertation();
+    ASSERT_ANY_THROW(l1[0]); //проверка на пустоту списка
+}
+
+TEST(invertation, can_invertation_an_single_element_list) {
+    List<int> l1(1);
+    List<int> l2(l1);
+    l2.invertation();
+    EXPECT_EQ(l1, l2);
+}
 
 TEST(iterator, can_create_iterator_point_to_first) {
     List<int> l1(0);
@@ -264,4 +277,28 @@ TEST(iterator, different_iterators_are_not_equal) {
     List<int>::iterator it2 = l1.begin();
     it2 + 3;
     EXPECT_NE(it1, it2);
+}
+
+
+TEST(iterator, the_result_of_the_operation_arrow_is_different_for_different_iterators) {
+    List<int> l1(0);
+    List<int>::iterator it1(l1.insert_front(0));
+    for (int i = 1; i < 5; i++) {
+        l1.insert_front(i);
+    }
+    List<int>::iterator it2 = l1.begin();
+    it2 + 3;
+    EXPECT_NE(it1.operator->(), it2.operator->());
+}
+
+TEST(iterator, the_same_result_of_the_operation_arrow_for_different_iterators) {
+    using MyList = List<std::pair<int, int>>;
+    MyList l1(0);
+    MyList::iterator it1(l1.insert_front(std::make_pair(5, 1)));
+    for (int i = 1; i < 5; i++) {
+        l1.insert_front(std::make_pair(5, 1));
+    };
+    MyList::iterator it2 = l1.begin();
+    it2 + 4;
+    EXPECT_EQ(it1->second, it2->second);
 }

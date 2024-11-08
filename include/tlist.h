@@ -47,6 +47,8 @@ public:
 		friend bool operator==(const iterator& it1, const iterator& it2) {
 			return (it1.curr == it2.curr);
 		}
+		friend iterator& List::erase(iterator& it);
+		friend iterator& List::insert(T value, iterator& it);
 	};
 	iterator& begin() const {
 		return iterator(first);
@@ -89,42 +91,57 @@ public:
 	List& operator=(const List&);
 	void print();
 	T& operator[](int index);
-	Node* insert(T value, Node* prev) {
+	iterator& insert(T value, iterator& it) {
+		Node* prev = it.curr;
 		Node* tmp = new Node(value, prev->next);
 		prev->next = tmp;
-		return tmp;
+		return ++it;
 	}
-	Node* insert_front(T value) {
-		return first = new Node(value, first);
+	iterator& insert_front(T value) {
+		first = new Node(value, first);
+		return iterator(first);
 	}
 	
 	
-	Node* erase(T value) {
-		Node* prev = find(value);
-		Node* tmp = prev->next;
+	iterator& erase(iterator& it) {
+		Node* tmp = (it.curr)->next;
 		if (!tmp) throw 1;
-		prev->next = tmp->next;
+		(it.curr)->next = tmp->next;
 		delete tmp;
-		return prev->next;
+		return ++it;
 	}
-	Node* erase_front() {
-		if (!first) { return first; }
+	iterator& erase_front() {
+		if (!first) { return iterator(first); }
 		Node* tmp = first->next;
 		delete first;
-		return first = tmp;
+		first = tmp;
+		return iterator(first);
 	}
-	Node* find(T value) {
+	iterator& find(T value) {
 			Node* current = first;
 			while (current) {
-				if ((current->data) == value) { return current; };
+				if ((current->data) == value) { return iterator(current); };
 				current = current->next;
 			}
-			return nullptr;  // когда элемент со значением value не найден
+			return iterator(nullptr);  // когда элемент со значением value не найден
 		}
-	bool operator==(const List&);
-	bool operator!=(const List&);
-	Node* invertation() {
-		if (!first) { return nullptr; }
+	friend bool operator==(const List& l1, const List& other) {
+		Node* current = l1.first, * ocurrent = other.first;
+		while (current) {
+			if (!ocurrent) return 0;
+			if ((current->data) != (ocurrent->data)) return 0;
+			current = current->next;
+			ocurrent = ocurrent->next;
+		}
+		if (ocurrent) return 0;
+		return 1;
+	}
+
+	friend bool operator!=(const List& list1, const List& list2) {
+		return !(list1 == list2);
+	}
+	iterator& invertation() {
+		if (!first) { return iterator(nullptr); }
 		Node* current = first;
 		Node* cnext = current->next;
 		current->next = nullptr;
@@ -134,7 +151,7 @@ public:
 			current = cnext;
 			cnext = tmp;
 		}
-		return (first = current); //ссылка на новый first
+		return iterator(first = current); //ссылка на новый first
 	}
 };
 
@@ -238,22 +255,6 @@ inline List<T>& List<T>::operator=(const List<T>& other) {
 //	return nullptr;  // когда элемент со значением value не найден
 //}
 
-template<typename T>
-inline bool List<T>::operator==(const List<T>& other) {
-	Node* current = first, * ocurrent = other.first;
-	while (current) {
-		if (!ocurrent) return 0;
-		if ((current->data) != (ocurrent->data)) return 0;
-		current = current->next;
-		ocurrent = ocurrent->next;
-	}
-	if (ocurrent) return 0;
-	return 1;
-}
 
-template<typename T>
-inline bool List<T>::operator!=(const List<T>& other) {
-	return !(*this == *other);
-}
 
 #endif __TList_H__
